@@ -1,0 +1,63 @@
+﻿<Window x:Class="BigDataChal.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BigDataChal"
+        mc:Ignorable="d"
+        DataContext="{Binding Source={x:Static local:DataManager.Instance}}"
+        Title="MainWindow" Height="800" Width="1200">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="80"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBox Grid.Row="0" x:Name="comPathTB" VerticalContentAlignment="Center" Text="D:\공모전\채용정보빅데이터챌린지\datasetFiles\알리콘(로켓펀치)-기업정보 - 기업정보.csv"/>
+            <TextBox Grid.Row="1" x:Name="svcPathTB" VerticalContentAlignment="Center"/>
+            <TextBox Grid.Row="2" x:Name="jobPathTB" VerticalContentAlignment="Center"/>
+            <Button Grid.RowSpan="3" Grid.Column="1" Content="Load" Click="loadBtn_Click"/>
+        </Grid>
+        <TabControl Grid.Row="1">
+            <TabItem Header="회사 정보" >
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="800"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <ListView x:Name="companyLV" ItemsSource="{Binding Path=ComInfos}">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="ID" DisplayMemberBinding="{Binding ID}"/>
+                                <GridViewColumn Header="회사명" DisplayMemberBinding="{Binding KorName}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+
+                    <StackPanel Grid.Column="1" Orientation="Vertical">
+                        <TextBox Height="60" ScrollViewer.VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" 
+                             Text="{Binding ElementName=companyLV, Path=SelectedItem.ShortIntro}"/>
+                        <TextBox Height="150" ScrollViewer.VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" 
+                             Text="{Binding ElementName=companyLV, Path=SelectedItem.FullIntro}"/>
+                        <TextBox Height="50" ScrollViewer.VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" 
+                             Text="{Binding ElementName=companyLV, Path=SelectedItem.BusinessCat}"/>
+                        <TextBox Height="50" ScrollViewer.VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" 
+                             Text="{Binding ElementName=companyLV, Path=SelectedItem.Technology}"/>
+                        <TextBox Height="50" ScrollViewer.VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" 
+                             Text="{Binding ElementName=companyLV, Path=SelectedItem.EmployeeCnt}"/>
+                    </StackPanel>
+                   
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
