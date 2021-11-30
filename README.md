@@ -1,1 +1,3 @@
-# bigdataChallenge
+# 채용 정보 빅데이터 챌린지
+
+데이터 분석에 활용한 코드들을 모아놓은 repository입니다.
