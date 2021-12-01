@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,7 +28,11 @@ namespace BigDataChal
 
         private void loadBtn_Click(object sender, RoutedEventArgs e)
         {
-            DataManager.Instance.LoadCSV(comPathTB.Text, svcPathTB.Text, jobPathTB.Text);
+            string comPath = ConfigurationManager.AppSettings["company"];
+            string svcPath = ConfigurationManager.AppSettings["service"];
+            string jobPath = ConfigurationManager.AppSettings["job"];
+
+            DataManager.Instance.LoadCSV(comPath, svcPath, jobPath);
         }
     }
 }

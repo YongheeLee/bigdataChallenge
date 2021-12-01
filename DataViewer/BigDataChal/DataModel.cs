@@ -39,8 +39,8 @@ namespace BigDataChal
         public string Tag { get { return tag; } set { tag = value; OnChanged("Tag"); } }
 
         public string Homepage { get { return homeURL; } set { homeURL = value; OnChanged("Homepage"); } }
-        public string Plsturl { get { return plsturl; } set { plsturl = value; OnChanged("Plsturl"); } }
-        public string Ggplurl { get { return ggplurl; } set { ggplurl = value; OnChanged("Ggplurl"); } }
+        public string AppStore { get { return plsturl; } set { plsturl = value; OnChanged("AppStore"); } }
+        public string PlayStore { get { return ggplurl; } set { ggplurl = value; OnChanged("PlayStore"); } }
     }
 
     public class JobInfoT : BaseT
