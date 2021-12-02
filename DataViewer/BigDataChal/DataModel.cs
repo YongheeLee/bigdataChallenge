@@ -17,7 +17,16 @@ namespace BigDataChal
         }
     }
 
-    public class ServiceInfoT : BaseT 
+    public class ItemCountT : BaseT
+    {
+        private string item = null;
+        private int count = -1;
+
+        public string Item { get { return item; } set { item = value; OnChanged("Item"); } }
+        public int Count { get { return count; } set { count = value; OnChanged("Count"); } }
+    }
+
+        public class ServiceInfoT : BaseT 
     {
         private int svcid = -1;
         private int id = -1;
@@ -98,6 +107,7 @@ namespace BigDataChal
 
         private List<ServiceInfoT> services = new List<ServiceInfoT>();
         private List<JobInfoT> jobs = new List<JobInfoT>();
+        private List<string> keyword = new List<string>();
 
         public int ID { get { return id; } set { id = value; OnChanged("ID"); } }
         public string KorName { get { return korName; } set { korName = value; OnChanged("KorName"); } }
@@ -121,7 +131,7 @@ namespace BigDataChal
 
         public List<ServiceInfoT> Services { get { return services; } }
         public List<JobInfoT> Jobs { get { return jobs; } }
-
+        public List<string> Keyword { get { return keyword; } }
     }
 
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,12 +25,15 @@ namespace BigDataChal
         private ObservableCollection<ServiceInfoT> svcInfos = new ObservableCollection<ServiceInfoT>();
         private ObservableCollection<JobInfoT> jobInfos = new ObservableCollection<JobInfoT>();
 
-        public ObservableCollection<CompanyInfoT> ComInfos { get => comInfos;  }
+        public ObservableCollection<CompanyInfoT> ComInfos { get => comInfos; set => comInfos = value; }
         public ObservableCollection<ServiceInfoT> SvcInfos { get => svcInfos; }
         public ObservableCollection<JobInfoT> JobInfos { get => jobInfos; }
 
         public void LoadCSV(string companyFile, string serviceFile, string jobFile)
         {
+            string dir = System.IO.Path.Combine(ConfigurationManager.AppSettings["workingDir"], "Text");
+
+
             Dictionary<int, int> comIdToIdx = new Dictionary<int, int>();
             if (!string.IsNullOrEmpty(companyFile))
             {
@@ -97,6 +101,28 @@ namespace BigDataChal
                             };
 
                             comIdToIdx.Add(info.ID, comInfos.Count);
+
+                            string keyword = System.IO.Path.Combine(dir, string.Format("{0}_lmt.txt.txt", info.ID));
+
+                            if (System.IO.File.Exists(keyword))
+                            {
+                                using (System.IO.StreamReader srSub = System.IO.File.OpenText(keyword))
+                                {
+                                    while(true)
+                                    {
+                                        string lineSub = srSub.ReadLine();
+                                        if (lineSub == null)
+                                            break;
+
+                                        lineSub = lineSub.Replace("\'", "");
+                                        lineSub = lineSub.Replace("\"", "");
+                                        lineSub = lineSub.Replace(",", "");
+                                        lineSub = lineSub.Replace(" ", "");
+
+                                        info.Keyword.Add(lineSub);
+                                    }
+                                }
+                            }
 
                             comInfos.Add(info);
                             inContent = false;
