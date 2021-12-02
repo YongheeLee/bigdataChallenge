@@ -68,7 +68,7 @@ namespace BigDataChal
                 techList.Add(new ItemCountT { Item = item.Key, Count = item.Value });
             }
             jobTechLV.ItemsSource = null;
-            jobTechLV.ItemsSource = techList;
+            jobTechLV.ItemsSource = techList.OrderByDescending(s => s.Count);
         }
 
         private void comTxtBtn_Click(object sender, RoutedEventArgs e)
@@ -131,10 +131,16 @@ namespace BigDataChal
             Dictionary<string, int> temp = new Dictionary<string, int>();
             List<ItemCountT> keyList = new List<ItemCountT>();
 
+            List<string> esse = new List<string> { "서비스", "플랫폼", "개발", "자동차", "의료", " 커머스", "쇼핑", "헬스케어", "농업", "데이터", "인공지능",
+                "공장", "자동화", "분석", "교육", "투자", "콘텐츠", "앱", "마케팅", "패션", "금융", "게임", "여행", "클라우드", "컨설팅", "채용", "부동산", "소통", "미디어", "예술", "디자인", "B2B", "B2C", "결제", "자산", "핀테크", "블록체인", "네트워크", "병원", "자율주행", "홈페이지", "스포츠", "언어", "무역","SNS", "스타트업"};
+
             foreach (var sub in list)
             {
                 foreach (var word in sub.Keyword)
                 {
+                    if (esse.FirstOrDefault(s => s == word) == null)
+                        continue;
+
                     if (temp.ContainsKey(word) == false)
                         temp.Add(word, 0);
 
@@ -149,7 +155,24 @@ namespace BigDataChal
             }
 
             techRelateLV.ItemsSource = null;
-            techRelateLV.ItemsSource = keyList;
+            techRelateLV.ItemsSource = keyList.OrderByDescending(s => s.Count);
+        }
+
+        private void WindowKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.C && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                var sb = new StringBuilder();
+                var selectedItems = techRelateLV.SelectedItems;
+
+                foreach (var item in selectedItems)
+                {
+                    ItemCountT a = item as ItemCountT;
+                    sb.Append(string.Format("{0},{1}\n", a.Item, a.Count)) ;
+                }
+
+                Clipboard.SetDataObject(sb.ToString());
+            }
         }
     }
 }
