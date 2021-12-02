@@ -35,3 +35,25 @@ app.config파일이 있는데
 실행 후, 상단에 Load 버튼을 클릭하면 일단 불러옵니다.
 
 앞으로 분석을 위한 기능을 계속 추가할 예정입니다.
+
+### konlpy 설치
+https://konlpy.org/ko/v0.5.2/install/#id2
+위 공식 문서를 참조함.
+
+하지만 몇 가지 추가적으로 해야 함
+참고로 내가 설치한 python 3.8.3임
+
+일단 java는 1.7q버전으로 설치를 했으며 환경 변수에 JAVA_HOME까지는 완료
+
+아래에서 jpype를 받아야 하는데,
+JPype1‑1.1.2‑cp38‑cp38‑win_amd64.whl 을 받아야 함.
+난 파이썬이 3.8.x이므로 cp38그리고 OS는 64비트이기 때문에 win_amd64
+마지막으로 jpype버전은 1.1.2로 받음 상위를 받을 경우 에러 발생
+https://www.lfd.uci.edu/~gohlke/pythonlibs/#jpype
+
+그리고 konlpy를 설치하고 import 시에 tweety관련 에러가 발생함.
+tweety버전이 4.4.0이였는데
+`pip install tweety==3.10.0 --force-reinstall `
+로 강제로 3.10버전을 설치함.
+
+그럼 잘됨.
