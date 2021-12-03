@@ -24,13 +24,13 @@
                 <Button Width="80" Margin="2" Content="Com Txt Rmt" Click="comTxtLimitBtn_Click"/>
             </StackPanel>
             <StackPanel Grid.Row="1" Orientation="Horizontal">
-                
+
             </StackPanel>
             <StackPanel Grid.Row="2" Orientation="Horizontal">
-                
+
             </StackPanel>
         </Grid>
-       
+
         <TabControl Grid.Row="1">
             <TabItem Header="회사 정보" >
                 <Grid>
@@ -78,52 +78,156 @@
                             </ListView.View>
                         </ListView>
                     </StackPanel>
-                   
+
                 </Grid>
             </TabItem>
-
             <TabItem Header="채용">
+                <local:SortListView SelectionChanged="LV_SelectionChanged" ItemsSource="{Binding Path=JobInfos}">
+                    <local:SortListView.View>
+                        <GridView>
+                            <GridViewColumn Header="회사명" Width="100" DisplayMemberBinding="{Binding Path=KorName}"/>
+                            <GridViewColumn Header="Role" Width="100" DisplayMemberBinding="{Binding Path=Role}"/>
+                            <GridViewColumn Header="계약형태" Width="100" DisplayMemberBinding="{Binding Path=ContractType}"/>
+                            <GridViewColumn Header="신입/경력" Width="100" DisplayMemberBinding="{Binding Path=Career}"/>
+                            <GridViewColumn Header="최저연봉" Width="80" DisplayMemberBinding="{Binding Path=MinSalary}"/>
+                            <GridViewColumn Header="최고연봉" Width="80" DisplayMemberBinding="{Binding Path=MaxSalary}"/>
+                            <GridViewColumn Header="기술" Width="800" DisplayMemberBinding="{Binding Path=Technique}"/>
+                            <GridViewColumn Header="언어" Width="50" DisplayMemberBinding="{Binding Path=Language}"/>
+                        </GridView>
+                    </local:SortListView.View>
+                </local:SortListView>
+            </TabItem>
+            <TabItem Header="분석">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="24"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <StackPanel Orientation="Horizontal">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="10"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2">
                         <CheckBox Content="SW only" x:Name="swonlyCK" VerticalAlignment="Center"/>
                         <Button Width="80" Margin="2" HorizontalAlignment="Left" Content="Arrange" Click="jobAraBtn_Click"/>
                         <Button Width="80" Margin="2" HorizontalAlignment="Left" Content="RelateWord" Click="relateBtn_Click"/>
                     </StackPanel>
-                    
-                    <Grid Grid.Row="1">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <local:SortListView x:Name="jobTechLV">
-                            <local:SortListView.View>
-                                <GridView>
-                                    <GridViewColumn Header="Tech 명" DisplayMemberBinding="{Binding Path=Item}"/>
-                                    <GridViewColumn Header="Sum" DisplayMemberBinding="{Binding Path=Count}"/>
-                                </GridView>
-                            </local:SortListView.View>
-                        </local:SortListView>
-                        <local:SortListView x:Name="techRelateLV" Grid.Column="1">
-                            <local:SortListView.View>
-                                <GridView>
-                                    <GridViewColumn Header="키워드" DisplayMemberBinding="{Binding Path=Item}"/>
-                                    <GridViewColumn Header="Sum" DisplayMemberBinding="{Binding Path=Count}"/>
-                                </GridView>
-                            </local:SortListView.View>
-                        </local:SortListView>
-                    </Grid>
+
+                    <local:SortListView x:Name="jobTechLV" Grid.Row="1" Grid.ColumnSpan="2" SelectionChanged="LV_SelectionChanged">
+                        <local:SortListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Tech 명" Width="100" DisplayMemberBinding="{Binding Path=Item}"/>
+                                <GridViewColumn Header="Sum" Width="50" DisplayMemberBinding="{Binding Path=Count}"/>
+                                <GridViewColumn Header="기대최저" Width="50" DisplayMemberBinding="{Binding Path=Min}"/>
+                                <GridViewColumn Header="기대최고" Width="50" DisplayMemberBinding="{Binding Path=Max}"/>
+                            </GridView>
+                        </local:SortListView.View>
+                    </local:SortListView>
+                    <local:SortListView x:Name="techRelateLV" Grid.Column="2" Grid.Row="1" SelectionChanged="LV_SelectionChanged">
+                        <local:SortListView.View>
+                            <GridView>
+                                <GridViewColumn Header="키워드" Width="100" DisplayMemberBinding="{Binding Path=Item}"/>
+                                <GridViewColumn Header="Sum" Width="50" DisplayMemberBinding="{Binding Path=Count}"/>
+                            </GridView>
+                        </local:SortListView.View>
+                    </local:SortListView>
+
+                    <StackPanel Orientation="Horizontal" Grid.Column="4" Grid.ColumnSpan="2">
+                        <Button Width="80" Margin="2" HorizontalAlignment="Left" Content="Arrange" Click="ctrAraBtn_Click"/>
+                        <Button Width="80" Margin="2" HorizontalAlignment="Left" Content="RelateWord" Click="ctrrelateBtn_Click"/>
+                    </StackPanel>
+                    <local:SortListView x:Name="cntTypeLV"  Grid.Column="4" Grid.Row="1" SelectionChanged="LV_SelectionChanged">
+                        <local:SortListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Contract" Width="100" DisplayMemberBinding="{Binding Path=Item}"/>
+                                <GridViewColumn Header="Sum" Width="50" DisplayMemberBinding="{Binding Path=Count}"/>
+                            </GridView>
+                        </local:SortListView.View>
+                    </local:SortListView>
+                    <local:SortListView x:Name="cntTechLV" Grid.Column="5" Grid.Row="1" SelectionChanged="LV_SelectionChanged">
+                        <local:SortListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Tech" Width="100" DisplayMemberBinding="{Binding Path=Item}"/>
+                                <GridViewColumn Header="Sum" Width="50" DisplayMemberBinding="{Binding Path=Count}"/>
+                            </GridView>
+                        </local:SortListView.View>
+                    </local:SortListView>
+                    <local:SortListView x:Name="cntKeyLV" Grid.Column="6" Grid.Row="1" SelectionChanged="LV_SelectionChanged">
+                        <local:SortListView.View>
+                            <GridView>
+                                <GridViewColumn Header="키워드" Width="100" DisplayMemberBinding="{Binding Path=Item}"/>
+                                <GridViewColumn Header="Sum" Width="50" DisplayMemberBinding="{Binding Path=Count}"/>
+                            </GridView>
+                        </local:SortListView.View>
+                    </local:SortListView>
+
+                    <StackPanel Orientation="Horizontal" Grid.Column="8" Grid.ColumnSpan="2">
+                        <Button Width="80" Margin="2" HorizontalAlignment="Left" Content="Arrange" Click="dateAraBtn_Click"/>
+                        <Button Width="80" Margin="2" HorizontalAlignment="Left" Content="RelateWord" Click="daterelateBtn_Click"/>
+                    </StackPanel>
+                    <local:SortListView x:Name="dateLV"  Grid.Column="8" Grid.Row="1" SelectionChanged="LV_SelectionChanged">
+                        <local:SortListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Date" Width="100" DisplayMemberBinding="{Binding Path=Item}"/>
+                                <GridViewColumn Header="Sum" Width="50" DisplayMemberBinding="{Binding Path=Count}"/>
+                            </GridView>
+                        </local:SortListView.View>
+                    </local:SortListView>
+                    <local:SortListView x:Name="dateTechLV" Grid.Column="9" Grid.Row="1" SelectionChanged="LV_SelectionChanged">
+                        <local:SortListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Tech" Width="100" DisplayMemberBinding="{Binding Path=Item}"/>
+                                <GridViewColumn Header="Sum" Width="50" DisplayMemberBinding="{Binding Path=Count}"/>
+                            </GridView>
+                        </local:SortListView.View>
+                    </local:SortListView>
+                    <local:SortListView x:Name="dateKeyLV" Grid.Column="10" Grid.Row="1" SelectionChanged="LV_SelectionChanged">
+                        <local:SortListView.View>
+                            <GridView>
+                                <GridViewColumn Header="키워드" Width="100" DisplayMemberBinding="{Binding Path=Item}"/>
+                                <GridViewColumn Header="Sum" Width="50" DisplayMemberBinding="{Binding Path=Count}"/>
+                            </GridView>
+                        </local:SortListView.View>
+                    </local:SortListView>
+
+                    <StackPanel Orientation="Horizontal" Grid.Column="12" Grid.ColumnSpan="2">
+                        <Button Width="80" Margin="2" HorizontalAlignment="Left" Content="Arrange" Click="keyAraBtn_Click"/>
+                        <Button Width="80" Margin="2" HorizontalAlignment="Left" Content="RelateWord" Click="keyrelateBtn_Click"/>
+                    </StackPanel>
+                    <local:SortListView x:Name="keyLV"  Grid.Column="12" Grid.Row="1" SelectionChanged="LV_SelectionChanged">
+                        <local:SortListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Date" Width="100" DisplayMemberBinding="{Binding Path=Item}"/>
+                                <GridViewColumn Header="Sum" Width="50" DisplayMemberBinding="{Binding Path=Count}"/>
+                            </GridView>
+                        </local:SortListView.View>
+                    </local:SortListView>
+                    <local:SortListView x:Name="keyTechLV" Grid.Column="13" Grid.Row="1" SelectionChanged="LV_SelectionChanged">
+                        <local:SortListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Tech" Width="100" DisplayMemberBinding="{Binding Path=Item}"/>
+                                <GridViewColumn Header="Sum" Width="50" DisplayMemberBinding="{Binding Path=Count}"/>
+                            </GridView>
+                        </local:SortListView.View>
+                    </local:SortListView>
                 </Grid>
             </TabItem>
+
+           
         </TabControl>
     </Grid>
 </Window>

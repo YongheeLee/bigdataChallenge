@@ -21,9 +21,13 @@ namespace BigDataChal
     {
         private string item = null;
         private int count = -1;
+        private int min = -1;
+        private int max = -1;
 
         public string Item { get { return item; } set { item = value; OnChanged("Item"); } }
         public int Count { get { return count; } set { count = value; OnChanged("Count"); } }
+        public int Min { get { return min; } set { min = value; OnChanged("Min"); } }
+        public int Max { get { return max; } set { max = value; OnChanged("Max"); } }
     }
 
         public class ServiceInfoT : BaseT 
@@ -65,6 +69,7 @@ namespace BigDataChal
         private double stc_optn_mxmm_amt = 0;
         private string tech = null;
         private string lang = null;
+        private string korName = null;
 
         public int JobID { get { return jobid; } set { jobid = value; OnChanged("JobID"); } }
         public int ID { get { return id; } set { id = value; OnChanged("ID"); } }
@@ -80,6 +85,7 @@ namespace BigDataChal
 
         public string Technique { get { return tech; } set { tech = value; OnChanged("Technique"); } }
         public string Language { get { return lang; } set { lang = value; OnChanged("Language"); } }
+        public string KorName { get { return korName; } set { korName = value; OnChanged("KorName"); } }
 
     }
 

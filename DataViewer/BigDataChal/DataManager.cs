@@ -264,20 +264,32 @@ namespace BigDataChal
                             if (info.MaxSalary > 100000)
                                 info.MaxSalary /= 10000;
 
+                            
+
+                            if (comIdToIdx.ContainsKey(info.ID))
+                            {
+                                comInfos[comIdToIdx[info.ID]].Jobs.Add(info);
+                                info.KorName = comInfos[comIdToIdx[info.ID]].KorName;
+                            }
+
                             jobInfos.Add(info);
                             inContent = false;
                             sub = null;
                             data.Clear();
 
-                            if (comIdToIdx.ContainsKey(info.ID))
-                            {
-                                comInfos[comIdToIdx[info.ID]].Jobs.Add(info);
-                            }
 
-                                       }
+                        }
                     }
                 }
             }
+
+            var foundation = comInfos.Where(s => s.FoundDate != null && s.Jobs.Count > 0);
+
+            foreach(var item in foundation)
+            {
+
+            }
+            
         }
 
 
