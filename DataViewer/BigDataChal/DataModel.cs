@@ -71,6 +71,7 @@ namespace BigDataChal
         private string lang = null;
         private string korName = null;
         private List<string> techs = new List<string>();
+        private int[] onehot = null;
 
         public int JobID { get { return jobid; } set { jobid = value; OnChanged("JobID"); } }
         public int ID { get { return id; } set { id = value; OnChanged("ID"); } }
@@ -88,6 +89,7 @@ namespace BigDataChal
         public string Language { get { return lang; } set { lang = value; OnChanged("Language"); } }
         public string KorName { get { return korName; } set { korName = value; OnChanged("KorName"); } }
         public List<string> Techs { get { return techs; } }
+        public int[] OneHot { get { return onehot; } set { onehot = value; OnChanged("OneHot"); } }
 
     }
 
