@@ -341,7 +341,10 @@ namespace BigDataChal
             //3. Convert tech name in Job information to refined name
             foreach (var job in jobInfos)
             {
+                foreach(var tech in job.Techs)
+                {
 
+                }
             }
 
             //4. Make one hot encoding information each job info
