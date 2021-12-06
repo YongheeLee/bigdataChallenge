@@ -74,7 +74,7 @@ namespace BigDataChal
             {
                 string file = System.IO.Path.Combine(dir, string.Format("{0}_lmt.txt", item.ID));
                 System.IO.File.Delete(file);
-                if (item.Jobs.Where(s => s.Role.Contains("SW")).Count() == 0)
+                if (item.Jobs.Count() == 0)
                     continue;
 
                 System.IO.File.Delete(file);
@@ -96,23 +96,12 @@ namespace BigDataChal
 
             foreach (var item in DataManager.Instance.JobInfos)
             {
-                if (swonlyCK.IsChecked.Value && item.Role.Contains("SW") == false)
-                    continue;
-
-                if (item.Technique != null)
+                foreach(var nt in item.Techs)
                 {
-                    string str = item.Technique;
-                    str = str.Replace("\"", "");
+                    if (tech.ContainsKey(nt) == false)
+                        tech.Add(nt, 0);
 
-                    string[] fields = str.Split(',');
-
-                    for (int i = 0; i < fields.Count(); ++i)
-                    {
-                        if (tech.ContainsKey(fields[i]) == false)
-                            tech.Add(fields[i], 0);
-
-                        ++tech[fields[i]];
-                    }
+                    ++tech[nt];
                 }
             }
 
@@ -137,7 +126,18 @@ namespace BigDataChal
                     }
                 }
 
-                techList.Add(new ItemCountT { Item = item.Key, Count = item.Value, Min = (int)(low / lowCnt), Max = (int)(high / highCnt) });
+                if(low< 0 || high<0)
+                {
+
+                }
+
+                techList.Add(new ItemCountT { Item = item.Key, Count = item.Value, Min = lowCnt == 0 ? 0 : (int)(low / lowCnt), Max = highCnt == 0 ? 0 : (int)(high / highCnt) });
+
+
+                if (techList.Last().Max<0)
+                {
+
+                }
             }
 
             jobTechLV.ItemsSource = null;
@@ -210,9 +210,6 @@ namespace BigDataChal
 
             foreach (var item in DataManager.Instance.JobInfos)
             {
-                if (item.Role.Contains("SW") == false)
-                    continue;
-
                 if (item.Career != null)
                 {
                     string str = item.Career;
@@ -270,21 +267,12 @@ namespace BigDataChal
 
             foreach (var sub in jobList)
             {
-                if (sub.Role.Contains("SW") == false)
-                    continue;
-
-                if (sub.Technique != null)
+                foreach (var nt in sub.Techs)
                 {
-                    string str = sub.Technique;
-                    string[] fields = str.Split(',');
+                    if (temp1.ContainsKey(nt) == false)
+                        temp1.Add(nt, 0);
 
-                    for (int i = 0; i < fields.Count(); ++i)
-                    {
-                        if (temp1.ContainsKey(fields[i]) == false)
-                            temp1.Add(fields[i], 0);
-
-                        ++temp1[fields[i]];
-                    }
+                    ++temp1[nt];
                 }
             }
 
@@ -312,7 +300,7 @@ namespace BigDataChal
 
             foreach (var item in DataManager.Instance.ComInfos)
             {
-                if (item.Jobs.Where(s => s.Role != null && s.Role.Contains("SW")).Count() == 0)
+                if (item.Jobs.Count() == 0)
                     continue;
 
                 if (item.FoundDate != null)
@@ -366,23 +354,17 @@ namespace BigDataChal
 
             foreach (var sub in comList)
             {
-                if (sub.Jobs.Where(s => s.Role.Contains("SW")).Count() == 0)
+                if (sub.Jobs.Count() == 0)
                     continue;
 
                 foreach (var job in sub.Jobs)
                 {
-                    if (job.Technique != null)
+                    foreach (var nt in job.Techs)
                     {
-                        string str = job.Technique;
-                        string[] fields = str.Split(',');
+                        if (temp1.ContainsKey(nt) == false)
+                            temp1.Add(nt, 0);
 
-                        for (int i = 0; i < fields.Count(); ++i)
-                        {
-                            if (temp1.ContainsKey(fields[i]) == false)
-                                temp1.Add(fields[i], 0);
-
-                            ++temp1[fields[i]];
-                        }
+                        ++temp1[nt];
                     }
                 }
 
@@ -415,9 +397,15 @@ namespace BigDataChal
             Dictionary<string, int> temp1 = new Dictionary<string, int>();
             List<ItemCountT> keyList1 = new List<ItemCountT>();
 
+            Dictionary<string, int> min = new Dictionary<string, int>();
+            Dictionary<string, int> max = new Dictionary<string, int>();
+            Dictionary<string, int> mincnt = new Dictionary<string, int>();
+            Dictionary<string, int> maxcnt = new Dictionary<string, int>();
+
+
             foreach (var sub in DataManager.Instance.ComInfos)
             {
-                if (sub.Jobs.Where(s => s.Role.Contains("SW")).Count() == 0)
+                if (sub.Jobs.Count() == 0)
                     continue;
 
                 foreach (var word in sub.Keyword)
@@ -426,18 +414,40 @@ namespace BigDataChal
                         continue;
 
                     if (temp1.ContainsKey(word) == false)
+                    {
                         temp1.Add(word, 0);
-
+                        min.Add(word, 0);
+                        max.Add(word, 0);
+                        mincnt.Add(word, 0);
+                        maxcnt.Add(word, 0);
+                    }
                     ++temp1[word];
+
+                    foreach (var job in sub.Jobs)
+                    {
+                        min[word] += job.MinSalary != -1 ? job.MinSalary : 0;
+                        mincnt[word] += job.MinSalary != -1 ? 1 : 0;
+                        max[word] += job.MaxSalary != -1 ? job.MaxSalary : 0;
+                        maxcnt[word] += job.MaxSalary != -1 ? 1 : 0;
+                    }
                 }
+
+
             }
 
             foreach (var sub in temp1)
             {
-                keyList1.Add(new ItemCountT { Item = sub.Key, Count = sub.Value });
+                double minavs = mincnt[sub.Key] == 0 ? 0 : min[sub.Key] / mincnt[sub.Key];
+                double maxavs = maxcnt[sub.Key] == 0 ? 0 : max[sub.Key] / maxcnt[sub.Key];
+
+                keyList1.Add(new ItemCountT { Item = sub.Key, Count = sub.Value, Min = (int)minavs, Max = (int)maxavs });
             }
             keyLV.ItemsSource = null;
             keyLV.ItemsSource = keyList1.OrderByDescending(s => s.Count).ToList();
+
+            keyComLV.ItemsSource = null;
+            keyComLV.ItemsSource = keyList1.OrderByDescending(s => s.Count).ToList();
+
         }
 
         private void keyrelateBtn_Click(object sender, RoutedEventArgs e)
@@ -450,6 +460,7 @@ namespace BigDataChal
             Dictionary<string, int> temp1 = new Dictionary<string, int>();
             List<ItemCountT> keyList1 = new List<ItemCountT>();
 
+            
             foreach (var sub in DataManager.Instance.ComInfos)
             {
                 if (sub.Keyword.FirstOrDefault(s => s.Contains(item.Item)) == null)
@@ -457,24 +468,20 @@ namespace BigDataChal
 
                 foreach (var job in sub.Jobs)
                 {
-                    if (job.Role.Contains("SW") == false)
-                        continue;
-
-                    if (job.Technique != null)
+                    foreach (var nt in job.Techs)
                     {
-                        string str = job.Technique;
-                        string[] fields = str.Split(',');
-
-                        for (int i = 0; i < fields.Count(); ++i)
+                        if (temp1.ContainsKey(nt) == false)
                         {
-                            if (temp1.ContainsKey(fields[i]) == false)
-                                temp1.Add(fields[i], 0);
-
-                            ++temp1[fields[i]];
+                            temp1.Add(nt, 0);
+                           
                         }
+
+                       
+
+                        ++temp1[nt];
                     }
                 }
-                }
+            }
 
             foreach (var sub in temp1)
             {
@@ -482,6 +489,27 @@ namespace BigDataChal
             }
             keyTechLV.ItemsSource = null;
             keyTechLV.ItemsSource = keyList1.OrderByDescending(s => s.Count).ToList();
+        }
+
+        private void comDetailBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (keyComLV.SelectedItem == null)
+                return;
+
+            ItemCountT cnt = keyComLV.SelectedItem as ItemCountT;
+
+            List<CompanyInfoT> newInfo = new List<CompanyInfoT>();
+            foreach(var com in DataManager.Instance.ComInfos)
+            {
+                if (com.Keyword.FirstOrDefault(s => s.Contains(cnt.Item)) == null)
+                    continue;
+
+                newInfo.Add(com);
+            }
+
+            keyComInfoLV.ItemsSource = null;
+            keyComInfoLV.ItemsSource = newInfo;
+
         }
     }
 }

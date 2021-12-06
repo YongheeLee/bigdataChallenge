@@ -258,13 +258,29 @@ namespace BigDataChal
                                 Language = data[10],
                             };
 
-                            if (info.MinSalary > 100000)
+                            if (info.MinSalary >= 10000000)
                                 info.MinSalary /= 10000;
 
-                            if (info.MaxSalary > 100000)
+                            if (info.MaxSalary >= 10000000)
                                 info.MaxSalary /= 10000;
 
-                            
+                            if (info.MinSalary > 30000)
+                                info.MinSalary = -1;
+
+                            if (info.MaxSalary > 30000)
+                                info.MaxSalary = -1;
+
+                            if (info.Technique != null)
+                            {
+                                info.Technique = info.Technique.Replace("\"", "");
+                                info.Technique = info.Technique.Replace("#", ",");
+
+                                string[] tfields = info.Technique.Split(',');
+                                foreach (var techname in tfields)
+                                {
+                                    info.Techs.Add(techname);
+                                }
+                            }
 
                             if (comIdToIdx.ContainsKey(info.ID))
                             {
@@ -272,7 +288,9 @@ namespace BigDataChal
                                 info.KorName = comInfos[comIdToIdx[info.ID]].KorName;
                             }
 
-                            jobInfos.Add(info);
+                            if (info.Role.Equals("SW 개발"))
+                                jobInfos.Add(info);
+
                             inContent = false;
                             sub = null;
                             data.Clear();
@@ -283,15 +301,53 @@ namespace BigDataChal
                 }
             }
 
-            var foundation = comInfos.Where(s => s.FoundDate != null && s.Jobs.Count > 0);
-
-            foreach(var item in foundation)
+            foreach (var item in comInfos)
             {
+                if (item.Jobs.Count == 0)
+                    continue;
 
+                double min = 0, max = 0, minCnt = 0, maxCnt = 0;
+                foreach(var job in item.Jobs)
+                {
+                    min += job.MinSalary != -1 ? job.MinSalary : 0;
+                    max += job.MaxSalary != -1 ? job.MaxSalary : 0;
+                    minCnt += job.MinSalary != -1 ? 1 : 0;
+                    maxCnt += job.MaxSalary != -1 ? 1 : 0;
+                }
+
+                min = minCnt != 0 ? min / minCnt : 0;
+                max = maxCnt != 0 ? max / maxCnt : 0;
+
+                item.Min = (int)min;
+                item.Max = (int)max;
             }
             
         }
 
+        //TODO Cherry
+        private void ArrangeJobTech()
+        {
+            //1. Fill below dictionary key = Raw text, value = refined text
+            Dictionary<string, string> rawToRefine = new Dictionary<string, string>()
+            {
+                { "C++", "C/C++" },
+                {"C++ / QT Creator", "C/C++" },
+                {"Visual C++ MFC", "C/C++" }
+            };
+
+            //2. Fill below dictionary key = refined text, value = index
+            Dictionary<string, int> techToIndex = new Dictionary<string, int>();
+
+            //3. Convert tech name in Job information to refined name
+            foreach (var job in jobInfos)
+            {
+
+            }
+
+            //4. Make one hot encoding information each job info
+
+            //5. Make CSV File
+        }
 
     }
 }

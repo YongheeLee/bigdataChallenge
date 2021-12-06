@@ -70,6 +70,7 @@ namespace BigDataChal
         private string tech = null;
         private string lang = null;
         private string korName = null;
+        private List<string> techs = new List<string>();
 
         public int JobID { get { return jobid; } set { jobid = value; OnChanged("JobID"); } }
         public int ID { get { return id; } set { id = value; OnChanged("ID"); } }
@@ -86,6 +87,7 @@ namespace BigDataChal
         public string Technique { get { return tech; } set { tech = value; OnChanged("Technique"); } }
         public string Language { get { return lang; } set { lang = value; OnChanged("Language"); } }
         public string KorName { get { return korName; } set { korName = value; OnChanged("KorName"); } }
+        public List<string> Techs { get { return techs; } }
 
     }
 
@@ -110,6 +112,8 @@ namespace BigDataChal
         private string newsDate = null;
         private string newsTitle = null;
         private string newsLink = null;
+        private int min = -1;
+        private int max = -1;
 
         private List<ServiceInfoT> services = new List<ServiceInfoT>();
         private List<JobInfoT> jobs = new List<JobInfoT>();
@@ -138,6 +142,8 @@ namespace BigDataChal
         public List<ServiceInfoT> Services { get { return services; } }
         public List<JobInfoT> Jobs { get { return jobs; } }
         public List<string> Keyword { get { return keyword; } }
+        public int Min { get { return min; } set { min = value; OnChanged("Min"); } }
+        public int Max { get { return max; } set { max = value; OnChanged("Max"); } }
     }
 
 
