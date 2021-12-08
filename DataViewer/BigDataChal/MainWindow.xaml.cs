@@ -25,6 +25,9 @@ namespace BigDataChal
         public MainWindow()
         {
             InitializeComponent();
+            string techCategoryPath = ConfigurationManager.AppSettings["techCategory"];
+            string techListPath = ConfigurationManager.AppSettings["techNameList"];
+            DataManager.Instance.SetTechInfos(techCategoryPath, techListPath);
         }
 
         List<string> esse = new List<string> { "서비스", "플랫폼", "개발", "자동차", "의료", " 커머스", "쇼핑", "헬스케어", "농업", "데이터", "인공지능",

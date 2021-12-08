@@ -5,6 +5,7 @@ using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace BigDataChal
 {
@@ -24,15 +25,92 @@ namespace BigDataChal
         private ObservableCollection<CompanyInfoT> comInfos = new ObservableCollection<CompanyInfoT>();
         private ObservableCollection<ServiceInfoT> svcInfos = new ObservableCollection<ServiceInfoT>();
         private ObservableCollection<JobInfoT> jobInfos = new ObservableCollection<JobInfoT>();
+        private ObservableCollection<string> techInfos = new ObservableCollection<string>();
 
-        public ObservableCollection<CompanyInfoT> ComInfos { get => comInfos; set => comInfos = value; }
-        public ObservableCollection<ServiceInfoT> SvcInfos { get => svcInfos; }
-        public ObservableCollection<JobInfoT> JobInfos { get => jobInfos; }
+        //스텍별로 대표할 이름을 담은 맵!
+        private Dictionary<string, string> techRepName = new Dictionary<string, string>();
+        //스텍별 대표이름을 인덱싱한 맵!
+        private Dictionary<string, int> techIndexInfos = new Dictionary<string, int>();
+        //스텍을 one-hot 뭐시기할 배열!
+        private int[] stacks;
+
+
+        //버전이 다른지 람다로 작성된 부분이 에러가 나서 우선 실행이 되게 이렇게 변경하고 썼습니다
+        public ObservableCollection<CompanyInfoT> ComInfos {
+            get { return comInfos; }
+            set { this.comInfos = value; }
+        }
+        public ObservableCollection<ServiceInfoT> SvcInfos { get { return svcInfos; } }
+        public ObservableCollection<JobInfoT> JobInfos { get { return jobInfos; } }
+        public ObservableCollection<string> TechGroupInfos {
+            set { this.techInfos = value; }
+            get { return this.techInfos; }
+        }
+
+        public void SetTechInfos(string techCategoryFile, string techNameFile) {
+            Console.WriteLine("loading file info.....");
+
+            if (!string.IsNullOrEmpty(techNameFile))
+            {
+                using (System.IO.StreamReader sr = System.IO.File.OpenText(techNameFile))
+                {
+                    string line = sr.ReadLine();
+                    int index = 0;
+                    while (line != null)
+                    {
+                        if (!string.IsNullOrEmpty(line))
+                        {
+                            string data = Regex.Replace(line, @"\s", "");
+                            techIndexInfos.Add(data, index);
+                            index++;
+                        }
+                        line = sr.ReadLine();
+                    }
+
+                    if (techIndexInfos.Count > 0) stacks = new int[techIndexInfos.Count];
+                    Console.WriteLine("stacks's size = " + stacks.Length);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(techCategoryFile))
+            {
+                using (System.IO.StreamReader sr = System.IO.File.OpenText(techCategoryFile))
+                {
+                    string line = sr.ReadLine();
+
+                        while (line != null)
+                        {
+                            if (!string.IsNullOrEmpty(line))
+                            {
+                                string[] data = Regex.Replace(line, @"\s", "").Split(',');
+                                if(data.Length > 1)
+                                {
+                                    if (data[1] == "" || data[1].Equals("xxxx")) //데이터가 확실히 분류되지 않거나 없는건 따로 빼두기!
+                                    {
+                                        addTechRepName(data[0], "no data...");
+
+                                    }
+                                    else if (data[0] == "Column1" || data[1] == "Column2") { } //컬럼은 스킵
+                                    else
+                                    {
+                                        addTechRepName(data[0], data[1]);
+                                    }
+                                }
+                            } 
+                            line = sr.ReadLine();
+                         }
+                  }
+             }
+        }
+
+        private void addTechRepName(string key, string value) {
+            if (!techRepName.ContainsKey(key)) techRepName.Add(key, value);
+            Console.WriteLine("key = " + key + " / value = " + techRepName[key]);
+        }
 
         public void LoadCSV(string companyFile, string serviceFile, string jobFile)
         {
             string dir = System.IO.Path.Combine(ConfigurationManager.AppSettings["workingDir"], "Text");
-
 
             Dictionary<int, int> comIdToIdx = new Dictionary<int, int>();
             if (!string.IsNullOrEmpty(companyFile))
@@ -254,7 +332,7 @@ namespace BigDataChal
                                 MaxSalary = data[6] == null ? -1 : int.Parse(data[6]),
                                 OptnMin = data[7] == null ? -1 : double.Parse(data[7]),
                                 OptnMax = data[8] == null ? -1 : double.Parse(data[8]),
-                                Technique = data[9],
+                                Technique = processingRawData(data[9].Replace("\"","")), //이 부분을 원래 파일 내용과 one-hot 어쩌고한 데이터랑 같이 출력해보자!
                                 Language = data[10],
                             };
 
@@ -324,7 +402,38 @@ namespace BigDataChal
             
         }
 
-        //TODO Cherry
+        private string processingRawData(string data)
+        {
+            StringBuilder result = new StringBuilder();
+            result.Append(data + "\r\n");
+
+            string[] words = Regex.Replace(data, @"\s", "").Split(',');
+            for(int i = 0; i < words.Length; i ++)
+            {
+                Console.WriteLine("word = " + words[i]);
+                if(techRepName.ContainsKey(words[i]))
+                {
+                    string repName = techRepName[words[i]];
+                    if(repName != "no data...")
+                    {
+                        int index = techIndexInfos[repName];
+                        stacks[index] = 1;
+                    }
+                }
+            }
+
+            string arrayToString = "{" + String.Join(",", stacks.Select(p => p.ToString()).ToArray()) + "}";
+            result.Append(arrayToString);
+
+            int originStackSize = stacks.Length;
+            stacks = new int[originStackSize];
+
+            Console.WriteLine("result = " + result.ToString());
+
+            return result.ToString();
+        }
+
+        //TODO Cherry 
         private void ArrangeJobTech()
         {
             //1. Fill below dictionary key = Raw text, value = refined text
