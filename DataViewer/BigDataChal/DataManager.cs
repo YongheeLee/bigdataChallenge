@@ -27,15 +27,9 @@ namespace BigDataChal
         private ObservableCollection<JobInfoT> jobInfos = new ObservableCollection<JobInfoT>();
         private ObservableCollection<string> techInfos = new ObservableCollection<string>();
 
-        //스텍별로 대표할 이름을 담은 맵!
-        private Dictionary<string, string> techRepName = new Dictionary<string, string>();
-        //스텍별 대표이름을 인덱싱한 맵!
-        private Dictionary<string, int> techIndexInfos = new Dictionary<string, int>();
-        //스텍을 one-hot 뭐시기할 배열!
-        private int[] stacks;
+        private Dictionary<string, string> techRepName = new Dictionary<string, string>(); //스텍별로 대표할 이름을 담은 맵!
+        private Dictionary<string, int> techIndexInfos = new Dictionary<string, int>(); //스텍별 대표이름을 인덱싱한 맵!
 
-
-        //버전이 다른지 람다로 작성된 부분이 에러가 나서 우선 실행이 되게 이렇게 변경하고 썼습니다
         public ObservableCollection<CompanyInfoT> ComInfos {
             get { return comInfos; }
             set { this.comInfos = value; }
@@ -48,7 +42,6 @@ namespace BigDataChal
         }
 
         public void SetTechInfos(string techCategoryFile, string techNameFile) {
-            Console.WriteLine("loading file info.....");
 
             if (!string.IsNullOrEmpty(techNameFile))
             {
@@ -66,9 +59,6 @@ namespace BigDataChal
                         }
                         line = sr.ReadLine();
                     }
-
-                    if (techIndexInfos.Count > 0) stacks = new int[techIndexInfos.Count];
-                    Console.WriteLine("stacks's size = " + stacks.Length);
                 }
             }
 
@@ -85,7 +75,7 @@ namespace BigDataChal
                                 string[] data = Regex.Replace(line, @"\s", "").Split(',');
                                 if(data.Length > 1)
                                 {
-                                    if (data[1] == "" || data[1].Equals("xxxx")) //데이터가 확실히 분류되지 않거나 없는건 따로 빼두기!
+                                    if (data[1] == "" || data[1].Equals("xxxx")) //데이터가 확실히 분류되지 않거나 없는건 빈값처리!
                                     {
                                         addTechRepName(data[0], "");
 
@@ -332,7 +322,7 @@ namespace BigDataChal
                                 MaxSalary = data[6] == null ? -1 : int.Parse(data[6]),
                                 OptnMin = data[7] == null ? -1 : double.Parse(data[7]),
                                 OptnMax = data[8] == null ? -1 : double.Parse(data[8]),
-                                Technique = data[9], //이 부분을 원래 파일 내용과 one-hot 어쩌고한 데이터랑 같이 출력해보자!
+                                Technique = data[9],
                                 Language = data[10],
                             };
 
@@ -408,17 +398,23 @@ namespace BigDataChal
                 item.Max = (int)max;
             }
 
-            string csvPath = System.IO.Path.Combine(ConfigurationManager.AppSettings["workingDir"], "jobOnehot.csv");
+            string csvPath = System.IO.Path.Combine(ConfigurationManager.AppSettings["workingDir"], "jobOnehot.csv"); //csv 파일 경로
+            string columns = "JobID," + String.Join(",", techIndexInfos.Keys.Select(n => n).ToArray()); //csv 파일 컬럼 값들(id + 스텍 대표이름들..)
 
             if (System.IO.File.Exists(csvPath))
                 System.IO.File.Delete(csvPath);
-
-            foreach (var item in jobInfos)
+      
+            //item.JobID, item.OneHot[0], item.OneHot[1].......... item.OneHot[item.OneHot.Count()-1] 형식으로 csv 파일에 데이터 입력!
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(csvPath, false, System.Text.Encoding.GetEncoding("utf-8")))
             {
-                //TODO Cherry
-                //아래 형식으로 csv파일을 만들어 주세요
-                //item.JobID, item.OneHot[0], item.OneHot[1].......... item.OneHot[item.OneHot.Count()-1]    
-            }
+                file.WriteLine(columns);
+                foreach (var item in jobInfos)
+                {
+                    string rows = item.JobID.ToString() + "," + String.Join(",", item.OneHot.Select(p => p.ToString()).ToArray());
+                    file.WriteLine(rows);
+                }
+            }  
+
         }
 
         private void processingRawData(JobInfoT info)
@@ -455,47 +451,11 @@ namespace BigDataChal
                 }
             }
 
-            string arrayToString = "{" + String.Join(",", stacks.Select(p => p.ToString()).ToArray()) + "}";
+            string arrayToString = "{" + String.Join(",", info.OneHot.Select(p => p.ToString()).ToArray()) + "}";
             result.Append(arrayToString);
-
-            int originStackSize = stacks.Length;
-            stacks = new int[originStackSize];
 
             Console.WriteLine("result = " + result.ToString());
 
-            //return result.ToString();
-        }
-
-        //TODO Cherry 
-        private void ArrangeJobTech()
-        {
-            //1. Fill below dictionary key = Raw text, value = refined text
-            Dictionary<string, string> rawToRefine = new Dictionary<string, string>()
-            {
-                { "C++", "C/C++" },
-                {"C++ / QT Creator", "C/C++" },
-                {"Visual C++ MFC", "C/C++" }
-            };
-
-            //2. Fill below dictionary key = refined text, value = index
-            Dictionary<string, int> techToIndex = new Dictionary<string, int>();
-
-            //3. Convert tech name in Job information to refined name
-            foreach (var job in jobInfos)
-            {
-
-                
-            }
-
-            //4. Make one hot encoding information each job info
-            foreach (var job in jobInfos)
-            {
-                job.OneHot = new int[techToIndex.Count];
-
-            }
-
-
-            //5. Make CSV File
         }
 
     }
