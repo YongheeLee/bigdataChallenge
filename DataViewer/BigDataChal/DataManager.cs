@@ -407,7 +407,18 @@ namespace BigDataChal
                 item.Min = (int)min;
                 item.Max = (int)max;
             }
-            
+
+            string csvPath = System.IO.Path.Combine(ConfigurationManager.AppSettings["workingDir"], "jobOnehot.csv");
+
+            if (System.IO.File.Exists(csvPath))
+                System.IO.File.Delete(csvPath);
+
+            foreach (var item in jobInfos)
+            {
+                //TODO Cherry
+                //아래 형식으로 csv파일을 만들어 주세요
+                //item.JobID, item.OneHot[0], item.OneHot[1].......... item.OneHot[item.OneHot.Count()-1]    
+            }
         }
 
         private void processingRawData(JobInfoT info)
