@@ -87,7 +87,7 @@ namespace BigDataChal
                                 {
                                     if (data[1] == "" || data[1].Equals("xxxx")) //데이터가 확실히 분류되지 않거나 없는건 따로 빼두기!
                                     {
-                                        addTechRepName(data[0], "no data...");
+                                        addTechRepName(data[0], "");
 
                                     }
                                     else if (data[0] == "Column1" || data[1] == "Column2") { } //컬럼은 스킵
@@ -332,9 +332,17 @@ namespace BigDataChal
                                 MaxSalary = data[6] == null ? -1 : int.Parse(data[6]),
                                 OptnMin = data[7] == null ? -1 : double.Parse(data[7]),
                                 OptnMax = data[8] == null ? -1 : double.Parse(data[8]),
-                                Technique = processingRawData(data[9].Replace("\"","")), //이 부분을 원래 파일 내용과 one-hot 어쩌고한 데이터랑 같이 출력해보자!
+                                Technique = data[9], //이 부분을 원래 파일 내용과 one-hot 어쩌고한 데이터랑 같이 출력해보자!
                                 Language = data[10],
                             };
+
+                            if (info.Technique != null)
+                            {
+                                info.Technique = info.Technique.Replace("\"", "");
+                                info.Technique = info.Technique.Replace("#", ",");
+                            }
+
+                            processingRawData(info);
 
                             if (info.MinSalary >= 10000000)
                                 info.MinSalary /= 10000;
@@ -348,17 +356,17 @@ namespace BigDataChal
                             if (info.MaxSalary > 30000)
                                 info.MaxSalary = -1;
 
-                            if (info.Technique != null)
-                            {
-                                info.Technique = info.Technique.Replace("\"", "");
-                                info.Technique = info.Technique.Replace("#", ",");
-
-                                string[] tfields = info.Technique.Split(',');
-                                foreach (var techname in tfields)
-                                {
-                                    info.Techs.Add(techname);
-                                }
-                            }
+                           // if (info.Technique != null)
+                           // {
+                           //     info.Technique = info.Technique.Replace("\"", "");
+                           //     info.Technique = info.Technique.Replace("#", ",");
+                           //
+                           //     string[] tfields = info.Technique.Split(',');
+                           //     foreach (var techname in tfields)
+                           //     {
+                           //         info.Techs.Add(techname);
+                           //     }
+                           // }
 
                             if (comIdToIdx.ContainsKey(info.ID))
                             {
@@ -402,22 +410,36 @@ namespace BigDataChal
             
         }
 
-        private string processingRawData(string data)
+        private void processingRawData(JobInfoT info)
         {
-            StringBuilder result = new StringBuilder();
-            result.Append(data + "\r\n");
+            if (info.Technique == null)
+                return;
 
-            string[] words = Regex.Replace(data, @"\s", "").Split(',');
-            for(int i = 0; i < words.Length; i ++)
+            info.OneHot = Enumerable.Repeat(0, techIndexInfos.Count).ToArray();
+
+            StringBuilder result = new StringBuilder();
+            result.Append(info.Technique + "\r\n");
+
+            string[] words = Regex.Replace(info.Technique, @"\s", "").Split(',');
+            SortedSet<string> keys = new SortedSet<string>();
+
+            for (int i = 0; i < words.Length; i ++)
             {
+                
                 Console.WriteLine("word = " + words[i]);
                 if(techRepName.ContainsKey(words[i]))
                 {
                     string repName = techRepName[words[i]];
-                    if(repName != "no data...")
+                    if(!string.IsNullOrEmpty(repName))
                     {
+                        if (!keys.Contains(repName))
+                        {
+                            keys.Add(repName);
+                            info.Techs.Add(repName);
+                        }
+
                         int index = techIndexInfos[repName];
-                        stacks[index] = 1;
+                        info.OneHot[index] = 1;
                     }
                 }
             }
@@ -430,7 +452,7 @@ namespace BigDataChal
 
             Console.WriteLine("result = " + result.ToString());
 
-            return result.ToString();
+            //return result.ToString();
         }
 
         //TODO Cherry 
