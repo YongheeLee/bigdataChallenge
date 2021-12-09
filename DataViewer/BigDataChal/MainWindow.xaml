@@ -93,7 +93,9 @@
                             <GridViewColumn Header="신입/경력" Width="100" DisplayMemberBinding="{Binding Path=Career}"/>
                             <GridViewColumn Header="최저연봉" Width="80" DisplayMemberBinding="{Binding Path=MinSalary}"/>
                             <GridViewColumn Header="최고연봉" Width="80" DisplayMemberBinding="{Binding Path=MaxSalary}"/>
-                            <GridViewColumn Header="기술" Width="800" DisplayMemberBinding="{Binding Path=Technique}"/>
+                            <GridViewColumn Header="최고연봉" Width="80" DisplayMemberBinding="{Binding Path=SWType}"/>
+
+                            <GridViewColumn Header="기술" Width="800" DisplayMemberBinding="{Binding Path=TechniqueSum}"/>
                             <GridViewColumn Header="언어" Width="50" DisplayMemberBinding="{Binding Path=Language}"/>
                         </GridView>
                     </local:SortListView.View>
@@ -228,7 +230,63 @@
                     </local:SortListView>
                 </Grid>
             </TabItem>
-            <TabItem Header="회사 키워드">
+            <TabItem Header="SW개발자">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="24"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="400"/>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2">
+                        <Button Width="80" Margin="2" HorizontalAlignment="Left" Content="Arrange" Click="swAraBtn_Click"/>
+                        <Button Width="80" Margin="2" HorizontalAlignment="Left" Content="RelateWord" Click="swDetailBtn_Click"/>
+                    </StackPanel>
+                    <local:SortListView x:Name="swComLV"  SelectionChanged="LV_SelectionChanged" Grid.Row="1">
+                        <local:SortListView.View>
+                            <GridView>
+                                <GridViewColumn Header="키워드" Width="100" DisplayMemberBinding="{Binding Path=Item}"/>
+                                <GridViewColumn Header="Count" Width="100" DisplayMemberBinding="{Binding Path=Count}"/>
+                                <GridViewColumn Header="Min" Width="80" DisplayMemberBinding="{Binding Path=Min}"/>
+                                <GridViewColumn Header="Max" Width="80" DisplayMemberBinding="{Binding Path=Max}"/>
+                            </GridView>
+                        </local:SortListView.View>
+                    </local:SortListView>
+                    <local:SortListView x:Name="swComInfoLV"  Grid.Column="1" SelectionChanged="LV_SelectionChanged" Grid.Row="1">
+                        <local:SortListView.View>
+                            <GridView>
+                                <GridViewColumn Header="ID" DisplayMemberBinding="{Binding ID}"/>
+                                <GridViewColumn Header="회사명" DisplayMemberBinding="{Binding KorName}"/>
+                                <GridViewColumn Header="설립일" DisplayMemberBinding="{Binding FoundDate}"/>
+                                <GridViewColumn Header="분야" DisplayMemberBinding="{Binding BusinessCat}"/>
+                                <GridViewColumn Header="규모" DisplayMemberBinding="{Binding EmployeeCnt}"/>
+                                <GridViewColumn Header="채용" DisplayMemberBinding="{Binding Jobs.Count}"/>
+                                <GridViewColumn Header="최저연봉" DisplayMemberBinding="{Binding Min}"/>
+                                <GridViewColumn Header="최고연봉" DisplayMemberBinding="{Binding Max}"/>
+                            </GridView>
+                        </local:SortListView.View>
+                    </local:SortListView>
+                    <local:SortListView x:Name="swJobInfoLV"  Grid.Column="2" SelectionChanged="LV_SelectionChanged" Grid.Row="1">
+                        <local:SortListView.View>
+                            <GridView>
+                                <GridViewColumn Header="ID" DisplayMemberBinding="{Binding ID}"/>
+                                <GridViewColumn Header="회사명" DisplayMemberBinding="{Binding KorName}"/>
+                                <GridViewColumn Header="설립일" DisplayMemberBinding="{Binding FoundDate}"/>
+                                <GridViewColumn Header="분야" DisplayMemberBinding="{Binding BusinessCat}"/>
+                                <GridViewColumn Header="규모" DisplayMemberBinding="{Binding EmployeeCnt}"/>
+                                <GridViewColumn Header="채용" DisplayMemberBinding="{Binding Jobs.Count}"/>
+                                <GridViewColumn Header="최저연봉" DisplayMemberBinding="{Binding Min}"/>
+                                <GridViewColumn Header="최고연봉" DisplayMemberBinding="{Binding Max}"/>
+                            </GridView>
+                        </local:SortListView.View>
+                    </local:SortListView>
+                </Grid>
+            </TabItem>
+
+        <TabItem Header="회사 키워드">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="24"/>
@@ -268,7 +326,6 @@
                     </local:SortListView>
                 </Grid>
             </TabItem>
-           
         </TabControl>
     </Grid>
 </Window>

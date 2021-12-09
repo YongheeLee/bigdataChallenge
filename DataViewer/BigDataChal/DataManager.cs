@@ -11,6 +11,8 @@ namespace BigDataChal
 {
     public class DataManager
     {
+
+
         private static DataManager mgr = null;
         public static DataManager Instance
         {
@@ -22,7 +24,11 @@ namespace BigDataChal
             }
         }
 
+        private Dictionary<TypeM, List<int>> typeEncode = new Dictionary<TypeM, List<int>>();
+
         private ObservableCollection<CompanyInfoT> comInfos = new ObservableCollection<CompanyInfoT>();
+        private ObservableCollection<CompanyInfoT> comInfosSW = new ObservableCollection<CompanyInfoT>();
+
         private ObservableCollection<ServiceInfoT> svcInfos = new ObservableCollection<ServiceInfoT>();
         private ObservableCollection<JobInfoT> jobInfos = new ObservableCollection<JobInfoT>();
         private ObservableCollection<string> techInfos = new ObservableCollection<string>();
@@ -31,8 +37,8 @@ namespace BigDataChal
         private Dictionary<string, int> techIndexInfos = new Dictionary<string, int>(); //스텍별 대표이름을 인덱싱한 맵!
 
         public ObservableCollection<CompanyInfoT> ComInfos {
-            get { return comInfos; }
-            set { this.comInfos = value; }
+            get { return comInfosSW; }
+            set { this.comInfosSW = value; }
         }
         public ObservableCollection<ServiceInfoT> SvcInfos { get { return svcInfos; } }
         public ObservableCollection<JobInfoT> JobInfos { get { return jobInfos; } }
@@ -358,7 +364,7 @@ namespace BigDataChal
                            //     }
                            // }
 
-                            if (comIdToIdx.ContainsKey(info.ID))
+                            if (comIdToIdx.ContainsKey(info.ID) && info.Role.Equals("SW 개발"))
                             {
                                 comInfos[comIdToIdx[info.ID]].Jobs.Add(info);
                                 info.KorName = comInfos[comIdToIdx[info.ID]].KorName;
@@ -375,6 +381,41 @@ namespace BigDataChal
                         }
                     }
                 }
+            }
+
+            if(!string.IsNullOrEmpty(ConfigurationManager.AppSettings["techNameS"]))
+            {
+                typeEncode.Add(TypeM.BackEnd, new List<int>());
+                typeEncode.Add(TypeM.FrontEnd, new List<int>());
+                typeEncode.Add(TypeM.FullStack, new List<int>());
+                typeEncode.Add(TypeM.Mobile, new List<int>());
+                typeEncode.Add(TypeM.DeskTop, new List<int>());
+                typeEncode.Add(TypeM.Algorithm, new List<int>());
+                typeEncode.Add(TypeM.Enterprise, new List<int>());
+                typeEncode.Add(TypeM.Firmware, new List<int>());
+                typeEncode.Add(TypeM.Infra, new List<int>());
+
+                using(System.IO.StreamReader sr = System.IO.File.OpenText(ConfigurationManager.AppSettings["techNameS"]))
+                {
+                    while(true)
+                    {
+                        string line = sr.ReadLine();
+                        if (line == null)
+                            break;
+
+                        string[] fields = line.Split(',');
+                        typeEncode[TypeM.BackEnd].Add(int.Parse(fields[1]));
+                        typeEncode[TypeM.FrontEnd].Add(int.Parse(fields[2]));
+                        typeEncode[TypeM.FullStack].Add(int.Parse(fields[3]));
+                        typeEncode[TypeM.Mobile].Add(int.Parse(fields[4]));
+                        typeEncode[TypeM.DeskTop].Add(int.Parse(fields[5]));
+                        typeEncode[TypeM.Algorithm].Add(int.Parse(fields[6]));
+                        typeEncode[TypeM.Enterprise].Add(int.Parse(fields[7]));
+                        typeEncode[TypeM.Firmware].Add(int.Parse(fields[8]));
+                        typeEncode[TypeM.Infra].Add(int.Parse(fields[9]));
+                    }
+                }
+
             }
 
             foreach (var item in comInfos)
@@ -396,6 +437,11 @@ namespace BigDataChal
 
                 item.Min = (int)min;
                 item.Max = (int)max;
+
+                if(item.Jobs.Count > 0)
+                {
+                    comInfosSW.Add(item);
+                }
             }
 
             string csvPath = System.IO.Path.Combine(ConfigurationManager.AppSettings["workingDir"], "jobOnehot.csv"); //csv 파일 경로
@@ -451,10 +497,8 @@ namespace BigDataChal
                 }
             }
 
-            string arrayToString = "{" + String.Join(",", info.OneHot.Select(p => p.ToString()).ToArray()) + "}";
-            result.Append(arrayToString);
+            info.TechniqueSum = String.Join("/", info.Techs.Select(p => p).ToArray());
 
-            Console.WriteLine("result = " + result.ToString());
 
         }
 

@@ -7,6 +7,21 @@ using System.Threading.Tasks;
 
 namespace BigDataChal
 {
+    public enum TypeM
+    {
+        None,
+        BackEnd,
+        FrontEnd,
+        FullStack,
+        Mobile,
+        DeskTop,
+        Algorithm,
+        Enterprise,
+        Firmware,
+        Infra,
+    }
+
+
     public class BaseT : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
@@ -68,10 +83,12 @@ namespace BigDataChal
         private double stc_optn_mnmm_amt = 0;
         private double stc_optn_mxmm_amt = 0;
         private string tech = null;
+        private string techsum = null;
         private string lang = null;
         private string korName = null;
         private List<string> techs = new List<string>();
         private int[] onehot = null;
+        private TypeM swType = TypeM.None;
 
         public int JobID { get { return jobid; } set { jobid = value; OnChanged("JobID"); } }
         public int ID { get { return id; } set { id = value; OnChanged("ID"); } }
@@ -86,8 +103,11 @@ namespace BigDataChal
         public double OptnMax { get { return stc_optn_mxmm_amt; } set { stc_optn_mxmm_amt = value; OnChanged("OptnMax"); } }
 
         public string Technique { get { return tech; } set { tech = value; OnChanged("Technique"); } }
+        public string TechniqueSum { get { return techsum; } set { techsum = value; OnChanged("TechniqueSum"); } }
         public string Language { get { return lang; } set { lang = value; OnChanged("Language"); } }
         public string KorName { get { return korName; } set { korName = value; OnChanged("KorName"); } }
+        public TypeM SWType { get { return swType; } set { swType = value; OnChanged("SWType"); } }
+
         public List<string> Techs { get { return techs; } }
         public int[] OneHot { get { return onehot; } set { onehot = value; OnChanged("OneHot"); } }
 

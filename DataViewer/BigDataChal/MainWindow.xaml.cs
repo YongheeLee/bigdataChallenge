@@ -514,6 +514,72 @@ namespace BigDataChal
             keyComInfoLV.ItemsSource = newInfo;
 
         }
+
+        private void swAraBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Dictionary<TypeM, ItemCountT> data = new Dictionary<TypeM, ItemCountT>();
+
+            Dictionary<TypeM, int> min = new Dictionary<TypeM, int>();
+            Dictionary<TypeM, int> max = new Dictionary<TypeM, int>();
+            Dictionary<TypeM, int> minCnt = new Dictionary<TypeM, int>();
+            Dictionary<TypeM, int> maxCnt = new Dictionary<TypeM, int>();
+
+            string csvPath = System.IO.Path.Combine(ConfigurationManager.AppSettings["workingDir"], "jobsal.csv");
+
+            using (System.IO.StreamWriter sw = System.IO.File.AppendText(csvPath))
+            {
+
+                sw.WriteLine("stack,salary,minmax");
+                foreach (var item in DataManager.Instance.JobInfos)
+                {
+                    if (data.ContainsKey(item.SWType) == false)
+                    {
+                        data.Add(item.SWType, new ItemCountT { Item = item.SWType.ToString(), Count = 0 });
+                        min.Add(item.SWType, 0);
+                        max.Add(item.SWType, 0);
+                        minCnt.Add(item.SWType, 0);
+                        maxCnt.Add(item.SWType, 0);
+                    }
+
+                    data[item.SWType].Count++;
+
+                    if (item.MinSalary != -1 && item.MinSalary != 1 && item.MinSalary != 1234)
+                    {
+                        min[item.SWType] += item.MinSalary;
+                        minCnt[item.SWType] += 1;
+                        sw.WriteLine(string.Format("{0},{1},min", item.SWType, item.MinSalary));
+                    }
+
+                    if (item.MaxSalary != -1 && item.MaxSalary != 1 && item.MaxSalary != 1234)
+                    {
+                        max[item.SWType] += item.MaxSalary;
+                        maxCnt[item.SWType] += 1;
+                        sw.WriteLine(string.Format("{0},{1},max", item.SWType, item.MaxSalary));
+                    }
+
+
+                }
+            }
+            List<ItemCountT> finalList = new List<ItemCountT>();
+            foreach(var item in data)
+            {
+                if (minCnt[item.Key] != 0)
+                    item.Value.Min = min[item.Key] / minCnt[item.Key];
+
+                if (maxCnt[item.Key] != 0)
+                    item.Value.Max = max[item.Key] / maxCnt[item.Key];
+
+                finalList.Add(item.Value);
+            }
+
+            swComLV.ItemsSource = null;
+            swComLV.ItemsSource = finalList;
+        }
+
+        private void swDetailBtn_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
 
